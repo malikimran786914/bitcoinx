@@ -1,432 +1,582 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BitCoinX - VIP Premium</title>
+    <title>BitCoinX - Verified Hunter VIP</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #111827 100%);
-            --gold-primary: #f59e0b;
-            --gold-secondary: #d97706;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text-muted: #94a3b8;
+            --dark-core: #090c12;
+            --carbon-bg: radial-gradient(circle at center, #151b26 0%, #080b11 100%);
+            --gold-light: #ffeaa7;
+            --gold-metal: linear-gradient(180deg, #ffd700 0%, #d4af37 40%, #aa7c11 100%);
+            --panel-border: linear-gradient(90deg, #aa7c11, #ffd700, #aa7c11);
         }
 
         body {
-            background: var(--bg-gradient);
-            color: white;
+            background: var(--carbon-bg);
+            color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            text-align: center;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: space-between;
             height: 100vh;
             overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
         }
 
-        /* VIP Profile Section */
-        .profile-badge {
-            display: flex;
-            align-items: center;
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            padding: 6px 14px;
-            border-radius: 50px;
-            margin-top: 15px;
-            backdrop-filter: blur(5px);
+        /* Top Carbon Pattern overlay simulating the user's design image */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 0);
+            background-size: 16px 16px;
+            pointer-events: none;
+            z-index: 1;
         }
-        .profile-img {
-            width: 24px;
-            height: 24px;
+
+        /* VIP Top Right Dynamic Badge - As per image */
+        .header-container {
+            width: 90%;
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 15px;
+            z-index: 10;
+        }
+
+        .vip-card {
+            background: linear-gradient(135deg, #1e2530 0%, #0f131a 100%);
+            border: 2px solid #d4af37;
+            border-radius: 16px;
+            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+            min-width: 130px;
+        }
+
+        .tg-avatar-badge {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            margin-right: 8px;
-            border: 1px solid var(--gold-primary);
-            background: #1e293b;
+            background: linear-gradient(135deg, #229ED9, #17779A);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--gold-primary);
-        }
-        .profile-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #f8fafc;
+            box-shadow: 0 0 10px rgba(34, 158, 217, 0.5);
+            margin-bottom: 4px;
         }
 
-        /* Balance Display */
-        .header {
-            margin-top: 15px;
+        .tg-avatar-badge img {
+            width: 18px;
+            height: 18px;
         }
-        .header p {
-            color: var(--text-muted);
-            font-size: 13px;
-            letter-spacing: 2px;
-            margin: 0;
-            text-transform: uppercase;
+
+        .vip-username {
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .balance {
-            font-size: 38px;
+
+        .vip-status-text {
+            font-size: 11px;
+            color: #ffd700;
             font-weight: 800;
-            color: var(--gold-primary);
-            text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
-            margin-top: 5px;
-            font-family: monospace;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* VIP Metallic Coin */
-        .coin-container {
+        .vip-tier {
+            font-size: 9px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* Dynamic Main Score Display matching font colors */
+        .score-box {
+            text-align: center;
+            z-index: 10;
+            margin-top: -10px;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #8e9bb0;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            margin: 0;
+        }
+
+        .score-display {
+            font-size: 44px;
+            font-weight: 800;
+            background: linear-gradient(180deg, #fff7d6 0%, #d4af37 60%, #aa7c11 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: monospace;
+            margin-top: 5px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        /* Highly Styled Metallic Multi-Ring Coin Arena */
+        .coin-arena {
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 100%;
             flex-grow: 1;
-            position: relative;
+            z-index: 10;
         }
-        .coin-wrapper {
-            position: relative;
+
+        .coin-outer-ring {
+            width: 250px;
+            height: 250px;
             border-radius: 50%;
-            padding: 8px;
-            background: rgba(245, 158, 11, 0.05);
-            box-shadow: 0 0 50px rgba(245, 158, 11, 0.15);
+            background: #0f131a;
+            border: 4px solid #1f293d;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212,175,55,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
         }
-        .coin {
+
+        /* Embedded text system matching 'BitCoinX Network' texture ring */
+        .coin-outer-ring::before {
+            content: '• VIP ACCESS • BitCoinX NETWORK';
+            position: absolute;
+            color: rgba(212, 175, 55, 0.3);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            word-spacing: 2px;
+            transform: rotate(0deg);
+        }
+
+        .coin-inner-core {
             width: 210px;
             height: 210px;
-            background: radial-gradient(circle, #fcd34d 0%, #f59e0b 60%, #b45309 100%);
+            background: radial-gradient(circle, #ffe654 0%, #d4af37 50%, #855805 100%);
             border-radius: 50%;
-            box-shadow: inset 0 4px 10px rgba(255,255,255,0.6), inset 0 -4px 10px rgba(0,0,0,0.4), 0 10px 25px rgba(0,0,0,0.5);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 100px;
-            font-weight: bold;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            font-size: 115px;
+            color: #ffffff;
+            font-weight: 900;
+            text-shadow: -2px 3px 6px rgba(0,0,0,0.5);
+            box-shadow: inset 0 4px 8px rgba(255,255,255,0.6), inset -4px -6px 12px rgba(0,0,0,0.6), 0 12px 24px rgba(0,0,0,0.6);
             cursor: pointer;
-            transition: transform 0.05s ease;
-        }
-        .coin:active {
-            transform: scale(0.94);
+            transition: transform 0.05s ease-out;
+            touch-action: none;
         }
 
-        /* Floating +Text Animation */
-        .floating-text {
+        /* High Performance Pop Engine styling */
+        .floating-score {
             position: absolute;
-            color: #34d399;
-            font-size: 20px;
-            font-weight: bold;
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 900;
             font-family: monospace;
             pointer-events: none;
-            animation: floatUp 0.6s ease-out forwards;
+            animation: slideOutUp 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+            text-shadow: 0 4px 10px rgba(212, 175, 55, 0.8);
         }
-        @keyframes floatUp {
+
+        @keyframes slideOutUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-80px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-110px) scale(1.25); }
         }
 
-        /* Boost Status Info */
-        .boost-banner {
-            font-size: 12px;
-            background: #065f46;
-            color: #34d399;
-            padding: 4px 15px;
-            border-radius: 20px;
-            position: absolute;
-            top: 10px;
-            display: none;
-        }
-
-        /* Panels Area */
-        .panel-container {
-            background: var(--card-bg);
+        /* Glassmorphism Bottom Panel Box matching screenshot styling */
+        .panel-box {
+            background: linear-gradient(180deg, #161d2a 0%, #0c1018 100%);
             width: 100%;
-            border-radius: 30px 30px 0 0;
-            padding: 20px;
+            border-radius: 32px 32px 0 0;
+            padding: 20px 22px 85px 22px;
             box-sizing: border-box;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            max-height: 40vh;
+            border-top: 2px solid #d4af37;
+            height: 38vh;
             overflow-y: auto;
+            z-index: 10;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
 
-        .tab-menu {
+        .tab-menu-bar {
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 15px;
-            background: rgba(15, 23, 42, 0.6);
-            padding: 6px;
-            border-radius: 15px;
+            background: #0f1420;
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 50px;
+            padding: 4px;
+            margin-bottom: 16px;
         }
-        .tab-btn {
+
+        .tab-trigger {
             background: none;
             border: none;
-            color: var(--text-muted);
-            padding: 8px 16px;
-            font-weight: 600;
-            font-size: 14px;
+            color: #64748b;
+            padding: 10px;
+            width: 33.33%;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 50px;
             cursor: pointer;
-            width: 33%;
-            border-radius: 10px;
-        }
-        .tab-btn.active {
-            background: var(--gold-primary);
-            color: #000;
+            transition: all 0.2s ease;
         }
 
-        .tab-content {
+        .tab-trigger.active {
+            background: var(--gold-metal);
+            color: #000000;
+            box-shadow: 0 2px 10px rgba(212,175,55,0.4);
+        }
+
+        .tab-panel-view {
             display: none;
         }
-        .tab-content.active {
+
+        .tab-panel-view.active {
             display: block;
         }
 
-        .task-card {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 14px;
-            padding: 12px 16px;
+        /* TapSwap Premium Row List Items */
+        .task-row-card {
+            background: rgba(15, 20, 32, 0.6);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 14px 16px;
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            text-align: left;
         }
-        .task-info h4 {
+
+        .task-title-group h4 {
             margin: 0;
             font-size: 14px;
             color: #f8fafc;
         }
-        .task-info p {
+
+        .task-title-group p {
             margin: 4px 0 0 0;
             font-size: 12px;
-            color: var(--gold-primary);
+            color: #ffd700;
+            font-weight: 700;
             font-family: monospace;
         }
-        .action-btn {
-            background: #2563eb;
+
+        .action-click-btn {
+            background: linear-gradient(135deg, #1e40af, #1d4ed8);
             color: white;
             border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
+            padding: 8px 16px;
+            border-radius: 10px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
         }
-        .action-btn.claimed {
-            background: #1e293b;
-            color: var(--text-muted);
+
+        .action-click-btn.claimed {
+            background: #273142;
+            color: #64748b;
+            box-shadow: none;
             cursor: default;
         }
-        .boost-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
+
+        /* Docked Sticky Bottom Navigation Hub */
+        .sticky-footer-hub {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: #090d14;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid rgba(212,175,55,0.15);
+            z-index: 100;
+        }
+
+        .hub-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            gap: 3px;
+            width: 25%;
+        }
+
+        .hub-node.active {
+            color: #ffd700;
+        }
+
+        .hub-node-icon {
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
 
-    <div class="profile-badge">
-        <div class="profile-img">₿</div>
-        <span class="profile-name">BitCoinX Hunter (VIP)</span>
-    </div>
-
-    <div class="header">
-        <p>BitCoinX Balance</p>
-        <div class="balance" id="scoreDisplay">0.00000000</div>
-    </div>
-
-    <div class="coin-container" id="tapZone">
-        <div class="boost-banner" id="boostBanner">🚀 10x BOOST ACTIVE (05:00)</div>
-        <div class="coin-wrapper">
-            <div class="coin" id="coinBtn">₿</div>
+    <div class="header-container">
+        <div class="vip-card">
+            <div class="tg-avatar-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21.922 3.123a1.5 1.5 0 0 0-1.454-.257L2.43 9.406a1.5 1.5 0 0 0-.107 2.766l5.244 2.248 2.628 5.782a1.5 1.5 0 0 0 2.686.071l2.873-4.597 4.966 3.642a1.5 1.5 0 0 0 2.336-.921L23.97 4.602a1.5 1.5 0 0 0-2.048-1.479z" fill="white"/>
+                </svg>
+            </div>
+            <span class="vip-username" id="userHandle">@Loading...</span>
+            <span class="vip-status-text">Verified Hunter</span>
+            <span class="vip-tier">BitCoinX VIP Tier 1</span>
         </div>
     </div>
 
-    <div class="panel-container">
-        <div class="tab-menu">
-            <button class="tab-btn active" onclick="switchTab('tasks', event)">Tasks</button>
-            <button class="tab-btn" onclick="switchTab('boosts', event)">Boost</button>
-            <button class="tab-btn" onclick="switchTab('invite', event)">Invite</button>
+    <div class="score-box">
+        <p class="score-label">BitCoinX Balance</p>
+        <div class="score-display" id="metricEngine">0.00000000</div>
+    </div>
+
+    <div class="coin-arena">
+        <div class="coin-outer-ring">
+            <div class="coin-inner-core" id="coinActionMesh">₿</div>
+        </div>
+    </div>
+
+    <div class="panel-box">
+        
+        <div class="tab-menu-bar">
+            <button class="tab-trigger active" onclick="switchView('tasks', event)">Tasks</button>
+            <button class="tab-trigger" onclick="switchView('boosts', event)">Boost</button>
+            <button class="tab-trigger" onclick="switchView('invite', event)">Invite</button>
         </div>
 
-        <div id="tasksTab" class="tab-content active">
-            <div class="task-card">
-                <div class="task-info">
-                    <h4>Join Official Telegram</h4>
+        <div id="tasksView" class="tab-panel-view active">
+            <div class="task-row-card">
+                <div class="task-title-group">
+                    <h4>Join Official Telegram Channel</h4>
                     <p>+0.00100000 BTCX</p>
                 </div>
-                <button class="action-btn" id="taskTg" onclick="doTask('tg', 'https://t.me/AzadGiveaway', 0.001)">Join</button>
+                <button class="action-click-btn" id="task_tg" onclick="handleVerify('tg', 'https://t.me/AzadGiveaway', 0.001)">Join</button>
             </div>
-            <div class="task-card">
-                <div class="task-info">
-                    <h4>Watch Latest Video 1</h4>
+            <div class="task-row-card">
+                <div class="task-title-group">
+                    <h4>Watch Latest Video Guide</h4>
                     <p>+0.00050000 BTCX</p>
                 </div>
-                <button class="action-btn" id="taskYt1" onclick="doTask('yt1', 'https://youtube.com/@imrhow?si=YagB2ygtenFAoVMp', 0.0005)">Watch</button>
-            </div>
-            <div class="task-card">
-                <div class="task-info">
-                    <h4>Watch Secret Strategy Video 2</h4>
-                    <p>+0.00050000 BTCX</p>
-                </div>
-                <button class="action-btn" id="taskYt2" onclick="doTask('yt2', 'https://youtube.com/@imrhow?si=YagB2ygtenFAoVMp', 0.0005)">Watch</button>
+                <button class="action-click-btn" id="task_yt" onclick="handleVerify('yt', 'https://youtube.com/@imrhow?si=YagB2ygtenFAoVMp', 0.0005)">Watch</button>
             </div>
         </div>
 
-        <div id="boostsTab" class="tab-content">
-            <div class="task-card">
-                <div class="task-info">
-                    <h4>10x Tap Multiplier (5 Mins)</h4>
-                    <p id="boostCountLabel">Available: 10/10</p>
+        <div id="boostsView" class="tab-panel-view">
+            <div class="task-row-card">
+                <div class="task-title-group">
+                    <h4>10x Tap Booster (5 Minutes)</h4>
+                    <p id="counterCap">Available: 10/10</p>
                 </div>
-                <button class="action-btn boost-btn" id="boostTrigger" onclick="activateBoost()">Activate</button>
+                <button class="action-click-btn" style="background: linear-gradient(135deg, #10b981, #059669);" id="masterBoost" onclick="boostIgnition()">Apply</button>
             </div>
         </div>
 
-        <div id="inviteTab" class="tab-content">
-            <div class="task-card" style="flex-direction: column; align-items: flex-start; gap: 10px;">
-                <div class="task-info">
-                    <h4>Invite Friends & Earn Big</h4>
-                    <p style="color: #34d399;">+0.00050000 BTCX per friend</p>
+        <div id="inviteView" class="tab-panel-view">
+            <div class="task-row-card" style="flex-direction: column; align-items: stretch; gap: 12px;">
+                <div class="task-title-group">
+                    <h4>VIP Link Distribution Engine</h4>
+                    <p style="color: #10b981;">+0.00050000 BTCX per active user</p>
                 </div>
-                <button class="action-btn" style="width: 100%; background: #d97706;" onclick="copyRefLink()">🔗 Copy Referral Link</button>
+                <button class="action-click-btn" style="background: linear-gradient(135deg, #d97706, #b45309); width: 100%;" onclick="copyRefEngine()">🔗 Invite Friends (VIP)</button>
             </div>
+        </div>
+
+    </div>
+
+    <div class="sticky-footer-hub">
+        <div class="hub-node active" id="node_tap" onclick="tabRoute('tap')">
+            <span class="hub-node-icon">🎯</span>
+            <span>Tap</span>
+        </div>
+        <div class="hub-node" id="node_tasks" onclick="tabRoute('tasks')">
+            <span class="hub-node-icon">📋</span>
+            <span>Tasks</span>
+        </div>
+        <div class="hub-node" id="node_boosts" onclick="tabRoute('boosts')">
+            <span class="hub-node-icon">⚡</span>
+            <span>Boost</span>
+        </div>
+        <div class="hub-node" id="node_invite" onclick="tabRoute('invite')">
+            <span class="hub-node-icon">👥</span>
+            <span>Invite</span>
         </div>
     </div>
 
     <script>
-        // State variables
-        let score = parseFloat(localStorage.getItem('b_score')) || 0.0;
-        let boostsLeft = localStorage.getItem('b_left') !== null ? parseInt(localStorage.getItem('b_left')) : 10;
-        let lastBoostReset = localStorage.getItem('b_reset_time');
-        
-        const now = new Date().getTime();
-        if(!lastBoostReset || (now - lastBoostReset > 24 * 60 * 60 * 1000)) {
-            boostsLeft = 10;
-            localStorage.setItem('b_left', boostsLeft);
-            localStorage.setItem('b_reset_time', now);
+        // Real-Time Telegram Sandbox Connection
+        const tgApp = window.Telegram?.WebApp;
+        if (tgApp) {
+            tgApp.expand();
+            tgApp.ready();
+            const identity = tgApp.initDataUnsafe?.user;
+            if (identity) {
+                document.getElementById('userHandle').innerText = identity.username ? `@${identity.username}` : identity.first_name;
+            } else {
+                document.getElementById('userHandle').innerText = "@Verified_Hunter";
+            }
+        } else {
+            document.getElementById('userHandle').innerText = "@Verified_Hunter";
         }
 
-        let isBoosted = false;
-        let boostTimer = null;
+        // System state variables
+        let mainBalance = parseFloat(localStorage.getItem('v_balance')) || 0.0;
+        let poolBoosters = localStorage.getItem('v_boosts_stock') !== null ? parseInt(localStorage.getItem('v_boosts_stock')) : 10;
+        let engineMultiplierActive = false;
 
-        function updateUI() {
-            document.getElementById('scoreDisplay').innerText = score.toFixed(8);
-            document.getElementById('boostCountLabel').innerText = `Available: ${boostsLeft}/10`;
-            if(boostsLeft <= 0) {
-                const btn = document.getElementById('boostTrigger');
-                btn.classList.add('claimed');
-                btn.innerText = "Empty";
+        function interfaceSync() {
+            document.getElementById('metricEngine').innerText = mainBalance.toFixed(8);
+            document.getElementById('counterCap').innerText = `Available: ${poolBoosters}/10`;
+            if (poolBoosters <= 0) {
+                const b = document.getElementById('masterBoost');
+                b.className = "action-click-btn claimed";
+                b.innerText = "Depleted";
             }
         }
-        updateUI();
+        interfaceSync();
 
-        const tasksState = JSON.parse(localStorage.getItem('b_tasks')) || {};
-        Object.keys(tasksState).forEach(id => {
-            if(tasksState[id]) {
-                const btn = document.getElementById(`task${id.charAt(0).toUpperCase() + id.slice(1)}`);
-                if(btn) {
-                    btn.classList.add('claimed');
-                    btn.innerText = "Claimed";
-                    btn.disabled = true;
+        // Local Storage Validation for Tasks
+        const taskVault = JSON.parse(localStorage.getItem('v_task_registry')) || {};
+        Object.keys(taskVault).forEach(key => {
+            if (taskVault[key]) {
+                const triggerElement = document.getElementById(`task_${key}`);
+                if (triggerElement) {
+                    triggerElement.className = "action-click-btn claimed";
+                    triggerElement.innerText = "Claimed";
+                    triggerElement.disabled = true;
                 }
             }
         });
 
-        function switchTab(tabId, event) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(`${tabId}Tab`).classList.add('active');
-            event.target.classList.add('active');
+        // Tab View Router Engine
+        function switchView(panelKey, ev) {
+            document.querySelectorAll('.tab-panel-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+            document.getElementById(panelKey + 'View').classList.add('active');
+            ev.target.classList.add('active');
         }
 
-        const coinBtn = document.getElementById('coinBtn');
-        
-        function handleTap(clientX, clientY) {
-            let increment = isBoosted ? 0.00000010 : 0.00000001;
-            score += increment;
-            updateUI();
-            localStorage.setItem('b_score', score);
-
-            const text = document.createElement('div');
-            text.classList.add('floating-text');
-            text.innerText = `+${increment.toFixed(8)}`;
-            text.style.left = `${clientX - 30}px`;
-            text.style.top = `${clientY - 20}px`;
-            document.body.appendChild(text);
+        function tabRoute(nodeKey) {
+            document.querySelectorAll('.tab-panel-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.hub-node').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
             
-            setTimeout(() => text.remove(), 600);
+            if(nodeKey === 'tap') {
+                document.getElementById('tasksView').classList.add('active');
+                document.querySelector('.tab-trigger').classList.add('active');
+            } else {
+                document.getElementById(nodeKey + 'View').classList.add('active');
+                // Sync top micro tab button highlights
+                const buttons = document.querySelectorAll('.tab-trigger');
+                if(nodeKey === 'tasks') buttons[0].classList.add('active');
+                if(nodeKey === 'boosts') buttons[1].classList.add('active');
+                if(nodeKey === 'invite') buttons[2].classList.add('active');
+            }
+            document.getElementById('node_' + nodeKey).classList.add('active');
         }
 
-        coinBtn.addEventListener('touchstart', (e) => {
+        // Fluid Tap Animations Engine
+        const meshElement = document.getElementById('coinActionMesh');
+        
+        function coreTapPulse(clientX, clientY) {
+            let pointDelta = engineMultiplierActive ? 0.00000010 : 0.00000001;
+            mainBalance += pointDelta;
+            interfaceSync();
+            localStorage.setItem('v_balance', mainBalance);
+
+            // 3D Matrix Transform compression simulation on Click
+            meshElement.style.transform = "scale(0.93)";
+            setTimeout(() => meshElement.style.transform = "scale(1)", 40);
+
+            // Generate Floating UI Elements
+            const textPop = document.createElement('div');
+            textPop.className = 'floating-score';
+            textPop.innerText = `+${pointDelta.toFixed(8)}`;
+            textPop.style.left = `${clientX - 25}px`;
+            textPop.style.top = `${clientY - 35}px`;
+            document.body.appendChild(textPop);
+            
+            setTimeout(() => textPop.remove(), 480);
+        }
+
+        meshElement.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            const touch = e.touches[0];
-            handleTap(touch.clientX, touch.clientY);
+            for (let i = 0; i < e.targetTouches.length; i++) {
+                coreTapPulse(e.targetTouches[i].clientX, e.targetTouches[i].clientY);
+            }
         });
 
-        coinBtn.addEventListener('click', (e) => {
-            if (e.pointerType === 'touch') return; 
-            handleTap(e.clientX, e.clientY);
+        meshElement.addEventListener('click', (e) => {
+            if (e.pointerType === 'touch') return;
+            coreTapPulse(e.clientX, e.clientY);
         });
 
-        function doTask(id, url, reward) {
-            window.open(url, '_blank');
+        // Task Action Router Verification
+        function handleVerify(id, URL, reward) {
+            window.open(URL, '_blank');
             setTimeout(() => {
-                if(!tasksState[id]) {
-                    score += reward;
-                    tasksState[id] = true;
-                    localStorage.setItem('b_tasks', JSON.stringify(tasksState));
+                if (!taskVault[id]) {
+                    mainBalance += reward;
+                    taskVault[id] = true;
+                    localStorage.setItem('v_task_registry', JSON.stringify(taskVault));
                     
-                    const btn = document.getElementById(`task${id.charAt(0).toUpperCase() + id.slice(1)}`);
-                    if(btn) {
-                        btn.classList.add('claimed');
-                        btn.innerText = "Claimed";
-                        btn.disabled = true;
+                    const el = document.getElementById(`task_${id}`);
+                    if (el) {
+                        el.className = "action-click-btn claimed";
+                        el.innerText = "Claimed";
+                        el.disabled = true;
                     }
-                    updateUI();
-                    localStorage.setItem('b_score', score);
+                    interfaceSync();
+                    localStorage.setItem('v_balance', mainBalance);
                 }
-            }, 2000);
+            }, 3000);
         }
 
-        function activateBoost() {
-            if(boostsLeft <= 0 || isBoosted) return;
+        // Boost Ignition Multiplier
+        function boostIgnition() {
+            if (poolBoosters <= 0 || engineMultiplierActive) return;
             
-            boostsLeft--;
-            localStorage.setItem('b_left', boostsLeft);
-            isBoosted = true;
+            poolBoosters--;
+            localStorage.setItem('v_boosts_stock', poolBoosters);
+            engineMultiplierActive = true;
             
-            const banner = document.getElementById('boostBanner');
-            banner.style.display = 'block';
-            updateUI();
+            const btn = document.getElementById('masterBoost');
+            btn.innerText = "ACTIVE";
+            btn.disabled = true;
+            interfaceSync();
 
-            let duration = 300; // 5 Mins
-            boostTimer = setInterval(() => {
-                duration--;
-                let mins = Math.floor(duration / 60);
-                let secs = duration % 60;
-                banner.innerText = `🚀 10x BOOST ACTIVE (${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')})`;
-                
-                if(duration <= 0) {
-                    clearInterval(boostTimer);
-                    isBoosted = false;
-                    banner.style.display = 'none';
-                    updateUI();
-                }
-            }, 1000);
+            setTimeout(() => {
+                engineMultiplierActive = false;
+                btn.innerText = "Apply";
+                btn.disabled = false;
+                interfaceSync();
+            }, 300000); // 5 Minutes Active Runtime
         }
 
-        function copyRefLink() {
-            let refLink = `https://t.me/BitCoinX_Tap_bot/bitcoinx?startapp=share`;
-            navigator.clipboard.writeText(refLink);
-            alert("🔗 VIP Referral Link Copied!");
+        // Share/Referral Link Generator Engine
+        function copyRefEngine() {
+            let userStr = tgApp?.initDataUnsafe?.user?.username || "HunterX";
+            let linkStr = `https://t.me/BitCoinX_Tap_bot/bitcoinx?startapp=id_${userStr}`;
+            navigator.clipboard.writeText(linkStr);
+            alert("🎯 BitCoinX VIP Referral Link Copied!");
         }
     </script>
 </body>
