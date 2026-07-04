@@ -1,13 +1,23 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BitCoinX - Tap to Earn</title>
+    <title>BitCoinX - VIP Tap App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #111827 100%);
+            --gold-primary: #f59e0b;
+            --gold-secondary: #d97706;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-muted: #94a3b8;
+        }
+
         body {
-            background-color: #0f172a;
+            background: var(--bg-gradient);
             color: white;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             text-align: center;
@@ -16,100 +26,420 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
             height: 100vh;
             overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
         }
+
+        /* VIP Profile Section */
+        .profile-badge {
+            display: flex;
+            align-items: center;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 6px 14px;
+            border-radius: 50px;
+            margin-top: 15px;
+            backdrop-filter: blur(5px);
+        }
+        .profile-img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid var(--gold-primary);
+            background: #1e293b;
+        }
+        .profile-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        /* Balance Display */
         .header {
-            margin-top: 30px;
+            margin-top: 15px;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: 13px;
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
         }
         .balance {
-            font-size: 45px;
-            font-weight: bold;
-            color: #f59e0b;
-            margin-top: 10px;
+            font-size: 38px;
+            font-weight: 800;
+            color: var(--gold-primary);
+            text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+            margin-top: 5px;
+            font-family: monospace;
         }
+
+        /* VIP Metallic Coin */
         .coin-container {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-grow: 1;
+            position: relative;
+        }
+        .coin-wrapper {
+            position: relative;
+            border-radius: 50%;
+            padding: 8px;
+            background: rgba(245, 158, 11, 0.05);
+            box-shadow: 0 0 50px rgba(245, 158, 11, 0.15);
         }
         .coin {
-            width: 220px;
-            height: 220px;
-            background: linear-gradient(145deg, #f59e0b, #d97706);
+            width: 210px;
+            height: 210px;
+            background: radial-gradient(circle, #fcd34d 0%, #f59e0b 60%, #b45309 100%);
             border-radius: 50%;
-            box-shadow: 0 0 40px #f59e0b;
+            box-shadow: inset 0 4px 10px rgba(255,255,255,0.6), inset 0 -4px 10px rgba(0,0,0,0.4), 0 10px 25px rgba(0,0,0,0.5);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 80px;
+            font-size: 100px;
             font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
             cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
             transition: transform 0.05s ease;
         }
         .coin:active {
-            transform: scale(0.92);
+            transform: scale(0.94);
         }
-        .tasks-container {
-            background-color: #1e293b;
+
+        /* Floating +Text Animation */
+        .floating-text {
+            position: absolute;
+            color: #34d399;
+            font-size: 22px;
+            font-weight: bold;
+            font-family: monospace;
+            pointer-events: none;
+            animation: floatUp 0.6s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.2); }
+        }
+
+        /* Boost Status Info */
+        .boost-banner {
+            font-size: 12px;
+            background: #065f46;
+            color: #34d399;
+            padding: 4px 15px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            display: none;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Tabs/Panels Area */
+        .panel-container {
+            background: var(--card-bg);
             width: 100%;
-            border-radius: 25px 25px 0 0;
-            padding: 25px;
+            border-radius: 30px 30px 0 0;
+            padding: 20px;
             box-sizing: border-box;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            max-height: 45vh;
+            overflow-y: auto;
         }
-        .task-btn {
-            background-color: #334155;
+
+        .tab-menu {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 6px;
+            border-radius: 15px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            width: 33%;
+            border-radius: 10px;
+        }
+        .tab-btn.active {
+            background: var(--gold-primary);
+            color: #000;
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* List Styling inside tabs */
+        .task-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+        .task-info h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #f8fafc;
+        }
+        .task-info p {
+            margin: 4px 0 0 0;
+            font-size: 12px;
+            color: var(--gold-primary);
+            font-family: monospace;
+        }
+        .action-btn {
+            background: #2563eb;
             color: white;
             border: none;
-            padding: 15px 20px;
-            margin: 10px 0;
-            width: 100%;
-            border-radius: 12px;
-            font-size: 16px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
+        }
+        .action-btn.claimed {
+            background: #1e293b;
+            color: var(--text-muted);
+            cursor: default;
+        }
+        .boost-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
         }
     </style>
 </head>
 <body>
 
+    <div class="profile-badge">
+        <img class="profile-img" id="userAvatar" src="https://ui-avatars.com/api/?name=Crypto+User&background=1e293b&color=f59e0b" alt="Avatar">
+        <span class="profile-name" id="userName">Loading...</span>
+    </div>
+
     <div class="header">
-        <h2>BitCoinX Balance</h2>
-        <div class="balance" id="score">0</div>
+        <p>BitCoinX Balance</p>
+        <div class="balance" id="scoreDisplay">0.00000000</div>
     </div>
 
-    <div class="coin-container">
-        <div class="coin" id="coinBtn">₿</div>
+    <div class="coin-container" id="tapZone">
+        <div class="boost-banner" id="boostBanner">🚀 10x BOOST ACTIVE (05:00)</div>
+        <div class="coin-wrapper">
+            <div class="coin" id="coinBtn">₿</div>
+        </div>
     </div>
 
-    <div class="tasks-container">
-        <h3 style="margin-top: 0;">Earn Extra Coins</h3>
-        <button class="task-btn" onclick="watchAd('https://google.com', 500)">Watch Video Ad (+500 Coins)</button>
-        <button class="task-btn" onclick="watchAd('https://google.com', 1000)">Join Telegram Channel (+1000 Coins)</button>
+    <div class="panel-container">
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="switchTab('tasks')">Tasks</button>
+            <button class="tab-btn" onclick="switchTab('boosts')">Boost</button>
+            <button class="tab-btn" onclick="switchTab('invite')">Invite</button>
+        </div>
+
+        <div id="tasksTab" class="tab-content active">
+            <div class="task-card">
+                <div class="task-info">
+                    <h4>Join Official Telegram</h4>
+                    <p>+0.00100000 BTCX</p>
+                </div>
+                <button class="action-btn" id="taskTg" onclick="doTask('tg', 'https://t.me/AzadGiveaway', 0.001)">Join</button>
+            </div>
+            <div class="task-card">
+                <div class="task-info">
+                    <h4>Watch Latest Video 1</h4>
+                    <p>+0.00050000 BTCX</p>
+                </div>
+                <button class="action-btn" id="taskYt1" onclick="doTask('yt1', 'https://youtube.com/@imrhow?si=YagB2ygtenFAoVMp', 0.0005)">Watch</button>
+            </div>
+            <div class="task-card">
+                <div class="task-info">
+                    <h4>Watch Secret Strategy Video 2</h4>
+                    <p>+0.00050000 BTCX</p>
+                </div>
+                <button class="action-btn" id="taskYt2" onclick="doTask('yt2', 'https://youtube.com/@imrhow?si=YagB2ygtenFAoVMp', 0.0005)">Watch</button>
+            </div>
+        </div>
+
+        <div id="boostsTab" class="tab-content">
+            <div class="task-card">
+                <div class="task-info">
+                    <h4>10x Tap Multiplier</h4>
+                    <p id="boostCountLabel">Available: 10/10</p>
+                </div>
+                <button class="action-btn boost-btn" id="boostTrigger" onclick="activateBoost()">Activate</button>
+            </div>
+        </div>
+
+        <div id="inviteTab" class="tab-content">
+            <div class="task-card" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                <div class="task-info">
+                    <h4>Invite Friends & Earn Big</h4>
+                    <p style="color: #34d399;">+0.00050000 BTCX per active user</p>
+                </div>
+                <button class="action-btn" style="width: 100%; background: #d97706;" onclick="copyRefLink()">🔗 Copy Referral Link</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        let score = parseInt(localStorage.getItem('btc_score')) || 0;
-        document.getElementById('score').innerText = score;
+        // Initialize Telegram SDK
+        const tg = window.Telegram?.WebApp;
+        if(tg) {
+            tg.expand();
+            // Fetch live TG User data
+            const user = tg.initDataUnsafe?.user;
+            if(user) {
+                document.getElementById('userName').innerText = user.username ? `@${user.username}` : `${user.first_name} (VIP)`;
+                if(user.photo_url) {
+                    document.getElementById('userAvatar').src = user.photo_url;
+                }
+            } else {
+                document.getElementById('userName').innerText = "@Imran_VIP";
+            }
+        } else {
+            document.getElementById('userName').innerText = "@Imran_VIP";
+        }
 
-        const coinBtn = document.getElementById('coinBtn');
-        coinBtn.addEventListener('click', () => {
-            score += 1;
-            document.getElementById('score').innerText = score;
-            localStorage.setItem('btc_score', score);
+        // State variables (stored natively in float format)
+        let score = parseFloat(localStorage.getItem('b_score')) || 0.0;
+        let boostsLeft = parseInt(localStorage.getItem('b_left'));
+        let lastBoostReset = localStorage.getItem('b_reset_time');
+        
+        // Handling 24-hour reset logic for boosts
+        const now = new Date().getTime();
+        if(!lastBoostReset || (now - lastBoostReset > 24 * 60 * 60 * 1000)) {
+            boostsLeft = 10;
+            localStorage.setItem('b_left', boostsLeft);
+            localStorage.setItem('b_reset_time', now);
+        }
+        if(isNaN(boostsLeft)) boostsLeft = 10;
+
+        let isBoosted = false;
+        let boostTimer = null;
+
+        // UI Refresh
+        function updateUI() {
+            document.getElementById('scoreDisplay').innerText = score.toFixed(8);
+            document.getElementById('boostCountLabel').innerText = `Available: ${boostsLeft}/10`;
+            if(boostsLeft <= 0) {
+                document.getElementById('boostTrigger').classList.add('claimed');
+                document.getElementById('boostTrigger').innerText = "Empty";
+            }
+        }
+        updateUI();
+
+        // Check Claimed Tasks
+        const tasksState = JSON.parse(localStorage.getItem('b_tasks')) || {};
+        Object.keys(tasksState).forEach(id => {
+            if(tasksState[id]) {
+                const btn = document.getElementById(`task${id.charAt(0).toUpperCase() + id.slice(1)}`);
+                if(btn) {
+                    btn.classList.add('claimed');
+                    btn.innerText = "Claimed";
+                    btn.disabled = true;
+                }
+            }
         });
 
-        function watchAd(adLink, reward) {
-            window.open(adLink, '_blank');
-            score += reward;
-            document.getElementById('score').innerText = score;
-            localStorage.setItem('btc_score', score);
+        // Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`${tabId}Tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Tap Mechanics
+        const coinBtn = document.getElementById('coinBtn');
+        const tapZone = document.getElementById('tapZone');
+
+        coinBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            let increment = isBoosted ? 0.00000010 : 0.00000001;
+            score += increment;
+            updateUI();
+            localStorage.setItem('b_score', score);
+
+            // Spawn floating text target
+            const touch = e.touches[0];
+            const text = document.createElement('div');
+            text.classList.add('floating-text');
+            text.innerText = `+${increment.toFixed(8)}`;
+            text.style.left = `${touch.clientX - 40}px`;
+            text.style.top = `${touch.clientY - 20}px`;
+            document.body.appendChild(text);
+            
+            setTimeout(() => text.remove(), 600);
+        });
+
+        // Task Processor
+        function doTask(id, url, reward) {
+            window.open(url, '_blank');
+            setTimeout(() => {
+                score += reward;
+                tasksState[id] = true;
+                localStorage.setItem('b_tasks', JSON.stringify(tasksState));
+                
+                const btn = document.getElementById(`task${id.charAt(0).toUpperCase() + id.slice(1)}`);
+                btn.classList.add('claimed');
+                btn.innerText = "Claimed";
+                btn.disabled = true;
+                updateUI();
+                localStorage.setItem('b_score', score);
+            }, 3000); // 3 seconds verification simulate delay
+        }
+
+        // Boost Engine
+        function activateBoost() {
+            if(boostsLeft <= 0 || isBoosted) return;
+            
+            boostsLeft--;
+            localStorage.setItem('b_left', boostsLeft);
+            isBoosted = true;
+            
+            const banner = document.getElementById('boostBanner');
+            banner.style.display = 'block';
+            updateUI();
+
+            let duration = 300; // 5 minutes = 300 seconds
+            boostTimer = setInterval(() => {
+                duration--;
+                let mins = Math.floor(duration / 60);
+                let secs = duration % 60;
+                banner.innerText = `🚀 10x BOOST ACTIVE (${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')})`;
+                
+                if(duration <= 0) {
+                    clearInterval(boostTimer);
+                    isBoosted = false;
+                    banner.style.display = 'none';
+                    updateUI();
+                }
+            }, 1000);
+        }
+
+        // Referral Links Generator
+        function copyRefLink() {
+            let myUsername = tg?.initDataUnsafe?.user?.username || "VIPUser";
+            let refLink = `https://t.me/BitCoinX_Tap_bot/bitcoinx?startapp=ref_${myUsername}`;
+            navigator.clipboard.writeText(refLink);
+            alert("VIP Referral Link Copied!");
         }
     </script>
-
 </body>
 </html>
