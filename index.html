@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitCoinX - Tap to Earn</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+        }
+        .header {
+            margin-top: 20px;
+        }
+        .balance {
+            font-size: 42px;
+            font-weight: bold;
+            color: #f59e0b;
+            margin-top: 5px;
+        }
+        .coin-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+        }
+        .coin {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            border-radius: 50%;
+            box-shadow: 0 0 30px #f59e0b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 70px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s ease;
+        }
+        .coin:active {
+            transform: scale(0.95);
+        }
+        .tasks-container {
+            background-color: #1e293b;
+            width: 100%;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .task-btn {
+            background-color: #334155;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 8px 0;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .task-btn:hover {
+            background-color: #475569;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>BitCoinX Balance</h2>
+        <div class="balance" id="score">0</div>
+    </div>
+
+    <div class="coin-container">
+        <div class="coin" id="coinBtn">₿</div>
+    </div>
+
+    <div class="tasks-container">
+        <h3>Earn Extra Coins (Watch Ads)</h3>
+        <button class="task-btn" onclick="watchAd('https://google.com', 500)">Watch Video Ad (+500 Coins)</button>
+        <button class="task-btn" onclick="watchAd('https://google.com', 1000)">Join Telegram Channel (+1000 Coins)</button>
+    </div>
+
+    <script>
+        let score = parseInt(localStorage.getItem('btc_score')) || 0;
+        document.getElementById('score').innerText = score;
+
+        const coinBtn = document.getElementById('coinBtn');
+        coinBtn.addEventListener('click', () => {
+            score += 1;
+            document.getElementById('score').innerText = score;
+            localStorage.setItem('btc_score', score);
+        });
+
+        function watchAd(adLink, reward) {
+            // Ad link naye tab mein khulega
+            window.open(adLink, '_blank');
+            // User ko reward mil jayega
+            score += reward;
+            document.getElementById('score').innerText = score;
+            localStorage.setItem('btc_score', score);
+            alert("Reward added: " + reward + " BitCoinX!");
+        }
+    </script>
+
+</body>
+</html>
